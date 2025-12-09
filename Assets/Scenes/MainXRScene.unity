@@ -937,14 +937,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gun
       objectReference: {fileID: 0}
-    - target: {fileID: 384708678091633155, guid: cb7d87347f4f9ef40a54c9559f141064, type: 3}
-      propertyPath: autoRandomSeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 384708678091633155, guid: cb7d87347f4f9ef40a54c9559f141064, type: 3}
-      propertyPath: InitialModule.startLifetime.scalar
-      value: 0.05
-      objectReference: {fileID: 0}
     - target: {fileID: 1122211130888211240, guid: cb7d87347f4f9ef40a54c9559f141064, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -984,10 +976,6 @@ PrefabInstance:
     - target: {fileID: 1122211130888211240, guid: cb7d87347f4f9ef40a54c9559f141064, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1929839063621082803, guid: cb7d87347f4f9ef40a54c9559f141064, type: 3}
-      propertyPath: autoRandomSeed
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

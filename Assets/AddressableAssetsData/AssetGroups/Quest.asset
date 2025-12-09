@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Quest
+  m_EditorClassIdentifier: 
+  m_GroupName: Quest
+  m_GUID: 7a1f4b8e804f8e046a530ca27c6e0be8
+  m_SerializeEntries:
+  - m_GUID: 5df29430841786645970802c5363a970
+    m_Address: MuzzleFlash_FX
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Quest
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9582c9d7e243ecb48930a6435b1ad7b3
+    m_Address: Impact_FX
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Quest
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 096229389a2be0544acfffd7a96450c6, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 18720e48c445c2c4d9f15136ee445925, type: 2}
+    - {fileID: 11400000, guid: 8939f0ffa7b796a4bb2b532eaf458bea, type: 2}
