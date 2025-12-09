@@ -56,27 +56,18 @@ public class GunShooting : MonoBehaviour
             if (muzzleFlash_Quest != null) muzzleFlash_Quest.Play();
             if (muzzleFlash_PCVR != null) muzzleFlash_PCVR.Play();
 
-            GameObject projectileInstance = Instantiate(
-                projectilePrefab,
-                firePoint.position,
-                firePoint.rotation
-            );
-
-            Collider projectileCollider = projectileInstance.GetComponent<Collider>();
-            if (gunCollider != null && projectileCollider != null)
-            {
-                Physics.IgnoreCollision(gunCollider, projectileCollider, true);
-            }
-
-            ProjectileScript bullet = projectileInstance.GetComponent<ProjectileScript>();
+            ProjectileScript bullet = ObjectPoolManager.Instance.GetProjectile();
 
             if (bullet != null)
             {
+                bullet.transform.position = firePoint.position;
+                bullet.transform.rotation = firePoint.rotation;
+
                 bullet.Launch();
             }
             else
             {
-                Debug.LogError("Le projectile n'a pas de ProjectileScript attaché!");
+                Debug.LogError("Impossible d'obtenir un projectile du pool !");
             }
         }
     }
