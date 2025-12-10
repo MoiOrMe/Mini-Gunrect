@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Quest
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f50e563c040ae334391e20a36c1cd2da
+    m_Address: Target_Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Quest
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 096229389a2be0544acfffd7a96450c6, type: 2}
   m_SchemaSet:

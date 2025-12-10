@@ -1,9 +1,14 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class ObjectPoolManager : MonoBehaviour
 {
     public static ObjectPoolManager Instance { get; private set; }
+
+    public bool IsReady { get; private set; } = false;
 
     [Header("Bullet Pool Settings")]
     [SerializeField] private ProjectileScript projectilePrefab;
@@ -12,7 +17,7 @@ public class ObjectPoolManager : MonoBehaviour
     private Queue<ProjectileScript> projectilePool = new Queue<ProjectileScript>();
 
     [Header("Target Pool Settings")]
-    [SerializeField] private TargetScript targetPrefab;
+    [SerializeField] private string targetAddress = "Target_Prefab";
     [SerializeField] private int targetPoolSize = 5;
     [SerializeField] private Transform[] targetSpawnPoints;
 
@@ -27,11 +32,20 @@ public class ObjectPoolManager : MonoBehaviour
         else
         {
             Instance = this;
-            InitializePool();
         }
     }
 
-    private void InitializePool()
+    IEnumerator Start()
+    {
+        InitializeProjectilePool();
+
+        yield return StartCoroutine(InitializeTargetPoolAsync());
+
+        IsReady = true;
+        Debug.Log("ObjectPoolManager : Pools initialisés et prêts.");
+    }
+
+    private void InitializeProjectilePool()
     {
         for (int i = 0; i < poolSize; i++)
         {
@@ -39,12 +53,37 @@ public class ObjectPoolManager : MonoBehaviour
             newProjectile.gameObject.SetActive(false);
             projectilePool.Enqueue(newProjectile);
         }
+    }
 
-        for (int i = 0; i < targetPoolSize; i++)
+    private IEnumerator InitializeTargetPoolAsync()
+    {
+        AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(targetAddress);
+        yield return handle;
+
+        if (handle.Status == AsyncOperationStatus.Succeeded)
         {
-            TargetScript newTarget = Instantiate(targetPrefab, transform);
-            newTarget.gameObject.SetActive(false);
-            targetPool.Enqueue(newTarget);
+            GameObject loadedPrefab = handle.Result;
+            Debug.Log($"ObjectPoolManager : Prefab Target chargé ({loadedPrefab.name}) pour la plateforme.");
+
+            for (int i = 0; i < targetPoolSize; i++)
+            {
+                GameObject newObj = Instantiate(loadedPrefab, transform);
+                TargetScript newTarget = newObj.GetComponent<TargetScript>();
+
+                if (newTarget != null)
+                {
+                    newObj.SetActive(false);
+                    targetPool.Enqueue(newTarget);
+                }
+                else
+                {
+                    Debug.LogError("Le prefab chargé ne contient pas le composant TargetScript !");
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("ObjectPoolManager : Impossible de charger le prefab Target via Addressables !");
         }
     }
 
@@ -52,7 +91,6 @@ public class ObjectPoolManager : MonoBehaviour
     {
         if (projectilePool.Count == 0)
         {
-            Debug.LogWarning("Pool vide. Création d'une nouvelle instance.");
             ProjectileScript newProjectile = Instantiate(projectilePrefab, transform);
             return newProjectile;
         }
@@ -71,9 +109,8 @@ public class ObjectPoolManager : MonoBehaviour
     {
         if (targetPool.Count == 0)
         {
-            TargetScript newTarget = Instantiate(targetPrefab, transform);
-            newTarget.ResetTargetState(position, rotation);
-            return newTarget;
+            Debug.LogWarning("Target Pool vide ! Augmentez la taille du pool dans l'inspecteur.");
+            return null;
         }
 
         TargetScript target = targetPool.Dequeue();

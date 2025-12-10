@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -16,8 +15,14 @@ public class TargetGameManager : MonoBehaviour
     private Transform[] spawnPoints;
     private bool isRespawning = false;
 
-    void Start()
+    IEnumerator Start()
     {
+        Debug.Log("TargetGameManager : Attente du chargement du Pool...");
+        while (ObjectPoolManager.Instance == null || !ObjectPoolManager.Instance.IsReady)
+        {
+            yield return null;
+        }
+
         spawnPoints = ObjectPoolManager.Instance.GetSpawnPoints();
 
         if (spawnPoints != null && spawnPoints.Length > 0)
@@ -29,8 +34,11 @@ public class TargetGameManager : MonoBehaviour
                     spawnPoints[i].rotation
                 );
 
-                targetToSpawn.TargetID = i;
-                activeTargets.Add(targetToSpawn);
+                if (targetToSpawn != null)
+                {
+                    targetToSpawn.TargetID = i;
+                    activeTargets.Add(targetToSpawn);
+                }
             }
         }
         else

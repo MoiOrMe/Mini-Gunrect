@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PCVR
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9837666fb744cd24d89adc2d7ca1bd1a
+    m_Address: Target_Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PCVR
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 096229389a2be0544acfffd7a96450c6, type: 2}
   m_SchemaSet:
