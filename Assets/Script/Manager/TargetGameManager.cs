@@ -1,7 +1,8 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class TargetGameManager : MonoBehaviour
 {
@@ -14,8 +15,14 @@ public class TargetGameManager : MonoBehaviour
     private Transform[] spawnPoints;
     private bool isRespawning = false;
 
-    void Start()
+    IEnumerator Start()
     {
+        Debug.Log("TargetGameManager : Attente du chargement du Pool...");
+        while (ObjectPoolManager.Instance == null || !ObjectPoolManager.Instance.IsReady)
+        {
+            yield return null;
+        }
+
         spawnPoints = ObjectPoolManager.Instance.GetSpawnPoints();
 
         if (spawnPoints != null && spawnPoints.Length > 0)
@@ -27,8 +34,11 @@ public class TargetGameManager : MonoBehaviour
                     spawnPoints[i].rotation
                 );
 
-                targetToSpawn.TargetID = i;
-                activeTargets.Add(targetToSpawn);
+                if (targetToSpawn != null)
+                {
+                    targetToSpawn.TargetID = i;
+                    activeTargets.Add(targetToSpawn);
+                }
             }
         }
         else
@@ -73,5 +83,43 @@ public class TargetGameManager : MonoBehaviour
         hitTargets.Clear();
         isRespawning = false;
         Debug.Log("Cibles réapparues !");
+    }
+
+    public void StartTargetHitFX(string address, Vector3 position, Quaternion rotation)
+    {
+        StartCoroutine(LoadAndPlayEffect(address, position, rotation));
+    }
+
+    private IEnumerator LoadAndPlayEffect(string address, Vector3 position, Quaternion rotation)
+    {
+        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(address, position, rotation);
+        yield return handle;
+
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            GameObject effectInstance = handle.Result;
+            ParticleSystem ps = effectInstance.GetComponent<ParticleSystem>();
+
+            if (ps != null)
+            {
+                ps.Play();
+                float lifetime = ps.main.duration + ps.main.startLifetime.constantMax;
+                StartCoroutine(ReleaseEffectInstance(handle, lifetime));
+            }
+            else
+            {
+                Addressables.ReleaseInstance(handle);
+            }
+        }
+        else
+        {
+            Debug.LogError($"TargetGameManager: Échec du chargement de l'impact Addressable : {handle.OperationException}");
+        }
+    }
+
+    private IEnumerator ReleaseEffectInstance(AsyncOperationHandle<GameObject> handle, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Addressables.ReleaseInstance(handle);
     }
 }
