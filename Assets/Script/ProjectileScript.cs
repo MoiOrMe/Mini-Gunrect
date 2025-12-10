@@ -13,19 +13,31 @@ public class ProjectileScript : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-
-        Destroy(gameObject, lifetime);
     }
 
     public void Launch()
     {
         if (rb == null) return;
 
+        gameObject.SetActive(true);
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
         rb.linearVelocity = transform.forward * speed;
+
+        Invoke(nameof(ReturnToPool), lifetime);
+    }
+
+    public void ReturnToPool()
+    {
+        gameObject.SetActive(false);
+
+        ObjectPoolManager.Instance.ReturnProjectile(this);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Destroy(gameObject);
+        ReturnToPool();
     }
 }
