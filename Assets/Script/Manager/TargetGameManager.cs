@@ -52,6 +52,12 @@ public class TargetGameManager : MonoBehaviour
         activeTargets.Remove(target);
         hitTargets.Add(target);
 
+        if (GameplayManager.Instance != null)
+        {
+            GameplayManager.Instance.AddScore(10);
+            GameplayManager.Instance.RegisterTargetDespawn();
+        }
+
         ObjectPoolManager.Instance.ReturnTarget(target);
 
         if (activeTargets.Count == 0 && !isRespawning)

@@ -7,8 +7,7 @@ public class ProjectileScript : MonoBehaviour
 
     private Rigidbody rb;
 
-    [Header("Destruction")]
-    [SerializeField] private float lifetime = 5f;
+    public Vector3 StartPosition { get; private set; }
 
     void Awake()
     {
@@ -19,20 +18,20 @@ public class ProjectileScript : MonoBehaviour
     {
         if (rb == null) return;
 
+        StartPosition = transform.position;
+
         gameObject.SetActive(true);
 
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-
         rb.linearVelocity = transform.forward * speed;
-
-        Invoke(nameof(ReturnToPool), lifetime);
     }
 
     public void ReturnToPool()
     {
-        gameObject.SetActive(false);
+        if (!gameObject.activeSelf) return;
 
+        gameObject.SetActive(false);
         ObjectPoolManager.Instance.ReturnProjectile(this);
     }
 

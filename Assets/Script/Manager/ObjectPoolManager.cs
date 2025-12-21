@@ -13,8 +13,12 @@ public class ObjectPoolManager : MonoBehaviour
     [Header("Bullet Pool Settings")]
     [SerializeField] private ProjectileScript projectilePrefab;
     [SerializeField] private int poolSize = 20;
+    [SerializeField] private float maxProjectileDistance = 50f;
+    [SerializeField] private float cleanupInterval = 0.5f;
 
     private Queue<ProjectileScript> projectilePool = new Queue<ProjectileScript>();
+
+    private List<ProjectileScript> activeProjectiles = new List<ProjectileScript>();
 
     [Header("Target Pool Settings")]
     [SerializeField] private string targetAddress = "Target_Prefab";
@@ -43,6 +47,33 @@ public class ObjectPoolManager : MonoBehaviour
 
         IsReady = true;
         Debug.Log("ObjectPoolManager : Pools initialisés et prêts.");
+
+        StartCoroutine(CleanupProjectilesRoutine());
+    }
+
+    private IEnumerator CleanupProjectilesRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(cleanupInterval);
+
+            for (int i = activeProjectiles.Count - 1; i >= 0; i--)
+            {
+                ProjectileScript proj = activeProjectiles[i];
+
+                if (proj == null || !proj.gameObject.activeSelf)
+                {
+                    activeProjectiles.RemoveAt(i);
+                    continue;
+                }
+
+                float distance = Vector3.Distance(proj.transform.position, proj.StartPosition);
+                if (distance > maxProjectileDistance)
+                {
+                    proj.ReturnToPool();
+                }
+            }
+        }
     }
 
     private void InitializeProjectilePool()
@@ -89,18 +120,29 @@ public class ObjectPoolManager : MonoBehaviour
 
     public ProjectileScript GetProjectile()
     {
+        ProjectileScript projectile;
+
         if (projectilePool.Count == 0)
         {
-            ProjectileScript newProjectile = Instantiate(projectilePrefab, transform);
-            return newProjectile;
+            projectile = Instantiate(projectilePrefab, transform);
+        }
+        else
+        {
+            projectile = projectilePool.Dequeue();
         }
 
-        ProjectileScript projectile = projectilePool.Dequeue();
+        activeProjectiles.Add(projectile);
+
         return projectile;
     }
 
     public void ReturnProjectile(ProjectileScript projectile)
     {
+        if (activeProjectiles.Contains(projectile))
+        {
+            activeProjectiles.Remove(projectile);
+        }
+
         projectile.transform.SetParent(transform);
         projectilePool.Enqueue(projectile);
     }
