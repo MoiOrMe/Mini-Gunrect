@@ -816,7 +816,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f27618094cbc5c48bd4a7f5f90e8a17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  respawnDelay: 3
+  spawnInterval: 1
 --- !u!114 &1373412470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -830,7 +830,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScore: 0
-  maxTargets: 4
+  maxTargets: 2
 --- !u!114 &1373412471
 MonoBehaviour:
   m_ObjectHideFlags: 0

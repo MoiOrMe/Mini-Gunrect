@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9198583531721904444}
   - component: {fileID: 7113162707457844421}
   - component: {fileID: 6306280575224565816}
+  - component: {fileID: 2791377790626163107}
   m_Layer: 0
   m_Name: MuzzleFlash_PCVR
   m_TagString: Untagged
@@ -4891,3 +4892,16 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &2791377790626163107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6429961823589462305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70f027a140c19884cb50b5af4fdf8c14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifetime: 0.2

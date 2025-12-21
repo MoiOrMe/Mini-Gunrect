@@ -6,14 +6,12 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class TargetGameManager : MonoBehaviour
 {
-    [Header("Réapparition")]
-    [SerializeField] private float respawnDelay = 3f;
-
-    private List<TargetScript> activeTargets = new List<TargetScript>();
-    private List<TargetScript> hitTargets = new List<TargetScript>();
+    [Header("Paramètres Spawner")]
+    [SerializeField] private float spawnInterval = 1.5f;
 
     private Transform[] spawnPoints;
-    private bool isRespawning = false;
+
+    private bool[] occupiedSpawnPoints;
 
     IEnumerator Start()
     {
@@ -25,70 +23,83 @@ public class TargetGameManager : MonoBehaviour
 
         spawnPoints = ObjectPoolManager.Instance.GetSpawnPoints();
 
-        if (spawnPoints != null && spawnPoints.Length > 0)
+        if (spawnPoints == null || spawnPoints.Length == 0)
         {
-            for (int i = 0; i < spawnPoints.Length; i++)
-            {
-                TargetScript targetToSpawn = ObjectPoolManager.Instance.GetTarget(
-                    spawnPoints[i].position,
-                    spawnPoints[i].rotation
-                );
+            Debug.LogError("TargetGameManager : Aucun point de spawn assigné !");
+            yield break;
+        }
 
-                if (targetToSpawn != null)
+        occupiedSpawnPoints = new bool[spawnPoints.Length];
+
+        StartCoroutine(SpawnLoop());
+    }
+
+    private IEnumerator SpawnLoop()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(spawnInterval);
+
+            if (GameplayManager.Instance != null)
+            {
+                int current = GameplayManager.Instance.CurrentTargets;
+                int max = GameplayManager.Instance.GetMaxTargets();
+
+                if (current < max)
                 {
-                    targetToSpawn.TargetID = i;
-                    activeTargets.Add(targetToSpawn);
+                    TrySpawnTargetAtFreeSpot();
                 }
             }
         }
-        else
+    }
+
+    private void TrySpawnTargetAtFreeSpot()
+    {
+        List<int> freeIndices = new List<int>();
+        for (int i = 0; i < spawnPoints.Length; i++)
         {
-            Debug.LogError("TargetGameManager : Aucun point de spawn assigné ! Vérifiez l'ObjectPoolManager.");
+            if (occupiedSpawnPoints[i] == false)
+            {
+                freeIndices.Add(i);
+            }
+        }
+
+        if (freeIndices.Count == 0) return;
+
+        int randomRef = Random.Range(0, freeIndices.Count);
+        int finalSpawnIndex = freeIndices[randomRef];
+
+        Transform spawnPoint = spawnPoints[finalSpawnIndex];
+        TargetScript newTarget = ObjectPoolManager.Instance.GetTarget(
+            spawnPoint.position,
+            spawnPoint.rotation
+        );
+
+        if (newTarget != null)
+        {
+            occupiedSpawnPoints[finalSpawnIndex] = true;
+
+            newTarget.SpawnPointIndex = finalSpawnIndex;
+
+            GameplayManager.Instance.RegisterTargetSpawn();
         }
     }
 
+
     public void TargetHit(TargetScript target)
     {
-        activeTargets.Remove(target);
-        hitTargets.Add(target);
-
         if (GameplayManager.Instance != null)
         {
             GameplayManager.Instance.AddScore(10);
             GameplayManager.Instance.RegisterTargetDespawn();
         }
 
+        if (target.SpawnPointIndex != -1 && target.SpawnPointIndex < occupiedSpawnPoints.Length)
+        {
+            occupiedSpawnPoints[target.SpawnPointIndex] = false;
+        }
+
         ObjectPoolManager.Instance.ReturnTarget(target);
-
-        if (activeTargets.Count == 0 && !isRespawning)
-        {
-            isRespawning = true;
-            StartCoroutine(RespawnTargetsDelayed());
-        }
-    }
-
-    private IEnumerator RespawnTargetsDelayed()
-    {
-        Debug.Log("Toutes les cibles sont touchées. Attente de " + respawnDelay + " secondes.");
-        yield return new WaitForSeconds(respawnDelay);
-
-        for (int i = 0; i < hitTargets.Count; i++)
-        {
-            if (i < spawnPoints.Length)
-            {
-                TargetScript targetToRespawn = ObjectPoolManager.Instance.GetTarget(
-                    spawnPoints[i].position,
-                    spawnPoints[i].rotation
-                );
-
-                targetToRespawn.TargetID = i;
-                activeTargets.Add(targetToRespawn);
-            }
-        }
-
-        hitTargets.Clear();
-        isRespawning = false;
-        Debug.Log("Cibles réapparues !");
     }
 
     public void StartTargetHitFX(string address, Vector3 position, Quaternion rotation)
@@ -99,33 +110,22 @@ public class TargetGameManager : MonoBehaviour
     private IEnumerator LoadAndPlayEffect(string address, Vector3 position, Quaternion rotation)
     {
         AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(address, position, rotation);
+
         yield return handle;
 
         if (handle.Status == AsyncOperationStatus.Succeeded)
         {
             GameObject effectInstance = handle.Result;
-            ParticleSystem ps = effectInstance.GetComponent<ParticleSystem>();
 
+            ParticleSystem ps = effectInstance.GetComponent<ParticleSystem>();
             if (ps != null)
             {
                 ps.Play();
-                float lifetime = ps.main.duration + ps.main.startLifetime.constantMax;
-                StartCoroutine(ReleaseEffectInstance(handle, lifetime));
-            }
-            else
-            {
-                Addressables.ReleaseInstance(handle);
             }
         }
         else
         {
-            Debug.LogError($"TargetGameManager: Échec du chargement de l'impact Addressable : {handle.OperationException}");
+            Debug.LogError($"TargetGameManager: Impossible de charger le FX {address}");
         }
-    }
-
-    private IEnumerator ReleaseEffectInstance(AsyncOperationHandle<GameObject> handle, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        Addressables.ReleaseInstance(handle);
     }
 }

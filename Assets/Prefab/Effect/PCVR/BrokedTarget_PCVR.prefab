@@ -41,7 +41,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3893656651770877397}
   serializedVersion: 8
-  lengthInSec: 5
+  lengthInSec: 2
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -4933,7 +4933,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8274391715269839445}
   serializedVersion: 8
-  lengthInSec: 5
+  lengthInSec: 2
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -9795,6 +9795,7 @@ GameObject:
   - component: {fileID: 7498688130127721273}
   - component: {fileID: 8228178915996247629}
   - component: {fileID: 6413883520640829497}
+  - component: {fileID: 5045000299836060749}
   m_Layer: 0
   m_Name: BrokedTarget_PCVR
   m_TagString: Untagged
@@ -14619,3 +14620,16 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &5045000299836060749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8446875243230996645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70f027a140c19884cb50b5af4fdf8c14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifetime: 2
