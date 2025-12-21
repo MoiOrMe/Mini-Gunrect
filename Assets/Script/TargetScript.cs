@@ -13,6 +13,8 @@ public class TargetScript : MonoBehaviour
 
     [SerializeField] private Transform impactPoint;
 
+    public int SpawnPointIndex { get; set; } = -1;
+
     private TargetGameManager gameManager;
 
     public int TargetID { get; set; }

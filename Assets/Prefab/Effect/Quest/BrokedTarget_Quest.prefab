@@ -4903,6 +4903,7 @@ GameObject:
   - component: {fileID: 6738731562101524292}
   - component: {fileID: 8126568217179931592}
   - component: {fileID: 3298669958804369462}
+  - component: {fileID: 340727347439530522}
   m_Layer: 0
   m_Name: BrokedTarget_Quest
   m_TagString: Untagged
@@ -9727,6 +9728,19 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &340727347439530522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1643841256808330316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70f027a140c19884cb50b5af4fdf8c14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifetime: 5
 --- !u!1 &1887488407962682189
 GameObject:
   m_ObjectHideFlags: 0
